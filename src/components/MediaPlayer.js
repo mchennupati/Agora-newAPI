@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 
-const MediaPlayer = (props) => {
-  const container = useRef();
+export default function MediaPlayer(props) {
+  const container = useRef(null);
 
   let videoTrack = props.videoTrack;
   let audioTrack = props.audioTrack;
@@ -9,27 +9,30 @@ const MediaPlayer = (props) => {
   useEffect(() => {
     if (!container.current) return;
 
-    videoTrack.play(container.current);
-
-    return () => {
-      videoTrack.stop();
-    };
+    if (videoTrack) {
+      videoTrack.play(container.current);
+      return () => {
+        videoTrack.stop();
+      };
+    }
   }, [container, videoTrack]);
 
-  // useEffect(() => {
-  //   audioTrack.play();
-  //   return () => {
-  //     audioTrack.stop();
-  //   };
-  // }, [audioTrack]);
+  useEffect(() => {
+    if (audioTrack) {
+      audioTrack.play();
+      return () => {
+        audioTrack.stop();
+      };
+    }
+  }, [audioTrack]);
 
   return (
     <div
       ref={container}
       className="video-player"
       style={{ width: "320px", height: "240px" }}
-    ></div>
+    >
+      {/* {JSON.stringify(videoTrack.play)} */}
+    </div>
   );
-};
-
-export default MediaPlayer;
+}

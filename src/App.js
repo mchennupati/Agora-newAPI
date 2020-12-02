@@ -6,10 +6,8 @@ import "./Call.css";
 
 const client = AgoraRTC.createClient({ codec: "h264", mode: "rtc" });
 
-function Call() {
-  const [appid, setAppid] = useState("");
-  const [token, setToken] = useState("");
-  const [channel, setChannel] = useState("");
+export default function App() {
+  const [channel, setChannel] = useState("default");
 
   const {
     localAudioTrack,
@@ -23,7 +21,7 @@ function Call() {
   return (
     <div className="call">
       <form className="call-form">
-        <label>
+        {/* <label>
           AppID:
           <input
             type="text"
@@ -32,8 +30,8 @@ function Call() {
               setAppid(event.target.value);
             }}
           />
-        </label>
-        <label>
+        </label> */}
+        {/* <label>
           Token(Optional):
           <input
             type="text"
@@ -42,7 +40,7 @@ function Call() {
               setToken(event.target.value);
             }}
           />
-        </label>
+        </label> */}
         <label>
           Channel:
           <input
@@ -53,6 +51,7 @@ function Call() {
             }}
           />
         </label>
+
         <div className="button-group">
           <button
             id="join"
@@ -60,7 +59,7 @@ function Call() {
             className="btn btn-primary btn-sm"
             disabled={joinState}
             onClick={() => {
-              join(appid, channel, token);
+              join(channel, null);
             }}
           >
             Join
@@ -78,7 +77,12 @@ function Call() {
           </button>
         </div>
       </form>
+      <b>Joined State: {JSON.stringify(joinState)}</b> <br />
+      {/* <b> Local Video: {JSON.stringify(localVideoTrack)}</b> <br />
+      <b> Remote Video: {JSON.stringify(remoteUsers)}</b> */}
+      <br />
       <div className="player-container">
+        <div>Local player {client.uid} </div>
         <div className="local-player-wrapper">
           <p className="local-player-text">
             {localVideoTrack && `localTrack`}
@@ -91,6 +95,7 @@ function Call() {
         </div>
         {remoteUsers.map((user) => (
           <div className="remote-player-wrapper" key={user.uid}>
+            <p>Remote Player + {user.uid} </p>
             <p className="remote-player-text">{`remoteVideo(${user.uid})`}</p>
             <MediaPlayer
               videoTrack={user.videoTrack}
@@ -102,5 +107,3 @@ function Call() {
     </div>
   );
 }
-
-export default Call;

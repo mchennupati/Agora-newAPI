@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
-import AgoraRTC from "agora-rtc-sdk-ng";
+import AgoraRTC, {
+  MicrophoneAudioTrackInitConfig,
+  CameraVideoTrackInitConfig
+} from "agora-rtc-sdk-ng";
 
 export default function useAgora(client) {
+  const appid = "2e5346b36d1f40b1bbc62472116d96de";
+
   const [localVideoTrack, setLocalVideoTrack] = useState("");
   const [localAudioTrack, setLocalAudioTrack] = useState("");
 
@@ -9,24 +14,27 @@ export default function useAgora(client) {
 
   const [remoteUsers, setRemoteUsers] = useState([]);
 
-  async function createLocalTracks(audioConfig, videoConfig) {
+  async function createLocalTracks() {
     const [
       microphoneTrack,
       cameraTrack
     ] = await AgoraRTC.createMicrophoneAndCameraTracks(
-      audioConfig,
-      videoConfig
+      MicrophoneAudioTrackInitConfig,
+      CameraVideoTrackInitConfig
     );
+    console.log(cameraTrack);
+
     setLocalAudioTrack(microphoneTrack);
     setLocalVideoTrack(cameraTrack);
+
     return [microphoneTrack, cameraTrack];
   }
 
-  async function join(appid, channel, token, uid) {
+  async function join(channel, token, uid) {
     if (!client) return;
     const [microphoneTrack, cameraTrack] = await createLocalTracks();
 
-    await client.join(appid, channel, token || null);
+    await client.join(appid, channel, token);
     await client.publish([microphoneTrack, cameraTrack]);
 
     setJoinState(true);
@@ -55,15 +63,19 @@ export default function useAgora(client) {
       // toggle rerender while state of remoteUsers changed.
       setRemoteUsers((remoteUsers) => Array.from(client.remoteUsers));
     };
+
     const handleUserUnpublished = (user) => {
       setRemoteUsers((remoteUsers) => Array.from(client.remoteUsers));
     };
+
     const handleUserJoined = (user) => {
       setRemoteUsers((remoteUsers) => Array.from(client.remoteUsers));
     };
+
     const handleUserLeft = (user) => {
       setRemoteUsers((remoteUsers) => Array.from(client.remoteUsers));
     };
+
     client.on("user-published", handleUserPublished);
     client.on("user-unpublished", handleUserUnpublished);
     client.on("user-joined", handleUserJoined);
