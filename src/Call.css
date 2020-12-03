@@ -5,6 +5,7 @@
 .player-container {
   padding: 20px;
   text-align: initial;
+  margin: 20px;
 }
 
 .button-group {
@@ -24,9 +25,11 @@ button {
 .remotePlayers {
   display: flex;
   border: solid blue 1px;
+  margin: 20px;
 }
 
 .remote-player-wrapper {
   border: solid blue 5px;
   flex: 1;
+  margin: 10px;
 }
