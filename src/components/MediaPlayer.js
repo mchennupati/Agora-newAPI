@@ -30,7 +30,7 @@ export default function MediaPlayer(props) {
     <div
       ref={container}
       className="video-player"
-      style={{ width: "320px", height: "240px" }}
+      style={{ width: "640px", height: "400px" }}
     >
       {/* {JSON.stringify(videoTrack.play)} */}
     </div>

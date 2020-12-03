@@ -29,7 +29,7 @@ button {
 }
 
 .remote-player-wrapper {
-  border: solid blue 5px;
+  border: solid green 1px;
   flex: 1;
   margin: 10px;
 }

@@ -90,10 +90,10 @@ export default function App() {
       <div className="player-container">
         {/* <div> {client.uid} </div> */}
         <div className="local-player-wrapper">
-          <p className="local-player-text">
+          {/* <p className="local-player-text">
             {localVideoTrack && `localTrack`}
             {joinState && localVideoTrack ? `(${client.uid})` : ""}
-          </p>
+          </p> */}
           <MediaPlayer
             videoTrack={localVideoTrack}
             audioTrack={localAudioTrack}
@@ -102,8 +102,8 @@ export default function App() {
         <div className="remotePlayers">
           {remoteUsers.map((user) => (
             <div className="remote-player-wrapper" key={user.uid}>
-              <p>Remote Player + {user.uid} </p>
-              <p className="remote-player-text">{`remoteVideo(${user.uid})`}</p>
+              {/* <p>Remote Player + {user.uid} </p> */}
+              {/* //   <p className="remote-player-text">{`remoteVideo(${user.uid})`}</p> */}
               <MediaPlayer
                 videoTrack={user.videoTrack}
                 audioTrack={user.audioTrack}
