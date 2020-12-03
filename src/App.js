@@ -3,6 +3,7 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import useAgora from "./hooks/useAgora";
 import MediaPlayer from "./components/MediaPlayer";
 import "./Call.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const client = AgoraRTC.createClient({ codec: "h264", mode: "rtc" });
 
@@ -42,7 +43,7 @@ export default function App() {
           />
         </label> */}
         <label>
-          Channel:
+          <b> Channel: </b>
           <input
             type="text"
             name="channel"
@@ -77,12 +78,17 @@ export default function App() {
           </button>
         </div>
       </form>
-      <b>Joined State: {JSON.stringify(joinState)}</b> <br />
+      {/* <b> */}
+      {/* {JSON.stringify(joinState) === "joined"
+          ? "No One is Here"
+          : "Welcome to the '" + channel + "' Room"}
+      </b>{" "} */}
+      <br />
       {/* <b> Local Video: {JSON.stringify(localVideoTrack)}</b> <br />
       <b> Remote Video: {JSON.stringify(remoteUsers)}</b> */}
       <br />
       <div className="player-container">
-        <div>Local player {client.uid} </div>
+        {/* <div> {client.uid} </div> */}
         <div className="local-player-wrapper">
           <p className="local-player-text">
             {localVideoTrack && `localTrack`}
@@ -93,16 +99,18 @@ export default function App() {
             audioTrack={localAudioTrack}
           ></MediaPlayer>
         </div>
-        {remoteUsers.map((user) => (
-          <div className="remote-player-wrapper" key={user.uid}>
-            <p>Remote Player + {user.uid} </p>
-            <p className="remote-player-text">{`remoteVideo(${user.uid})`}</p>
-            <MediaPlayer
-              videoTrack={user.videoTrack}
-              audioTrack={user.audioTrack}
-            ></MediaPlayer>
-          </div>
-        ))}
+        <div className="remotePlayers">
+          {remoteUsers.map((user) => (
+            <div className="remote-player-wrapper" key={user.uid}>
+              <p>Remote Player + {user.uid} </p>
+              <p className="remote-player-text">{`remoteVideo(${user.uid})`}</p>
+              <MediaPlayer
+                videoTrack={user.videoTrack}
+                audioTrack={user.audioTrack}
+              ></MediaPlayer>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

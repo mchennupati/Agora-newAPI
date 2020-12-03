@@ -9,6 +9,7 @@
 
 .button-group {
   padding: 20px;
+  margin: 0 20px;
 }
 
 .call-form {
@@ -18,4 +19,14 @@
 input,
 button {
   margin-right: 10px;
+}
+
+.remotePlayers {
+  display: flex;
+  border: solid blue 1px;
+}
+
+.remote-player-wrapper {
+  border: solid blue 5px;
+  flex: 1;
 }
