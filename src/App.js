@@ -1,14 +1,25 @@
 import React, { useState } from "react";
+
 import AgoraRTC from "agora-rtc-sdk-ng";
+
+import AgoraRTM from "agora-rtm-sdk";
+
 import useAgora from "./hooks/useAgora";
+import useAgoraChat from "./hooks/useAgoraChat";
 import MediaPlayer from "./components/MediaPlayer";
 import "./Call.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const client = AgoraRTC.createClient({ codec: "h264", mode: "rtc" });
 
+const chatClient = AgoraRTM.createInstance("2e5346b36d1f40b1bbc62472116d96de");
+
 export default function App() {
   const [channel, setChannel] = useState("default");
+
+  const [textArea, setTextArea] = useState();
+
+  const { messages, sendChannelMessage } = useAgoraChat("12345", chatClient);
 
   const {
     localAudioTrack,
@@ -18,6 +29,15 @@ export default function App() {
     joinState,
     remoteUsers
   } = useAgora(client);
+
+  function submitMessage(event) {
+    if (event.key === 13) {
+      event.preventDefault();
+      if (textArea.trim().length === 0) return;
+      sendChannelMessage(event.target.value);
+      setTextArea("");
+    }
+  }
 
   return (
     <div className="call">
@@ -111,6 +131,29 @@ export default function App() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="d-flex flex-column py-5 px-3">
+        {messages.map((data, index) => {
+          return (
+            <div className="row" key={`chat${index + 1}`}>
+              <h5 className="font-size-15" style={{ color: data.user.color }}>
+                {`${data.user.name} :`}
+              </h5>
+              <p className="text-break">{` ${data.message}`}</p>
+            </div>
+          );
+        })}
+      </div>
+      <div>
+        <textarea
+          placeholder="Type your message here"
+          className="form-control"
+          onChange={(e) => setTextArea(e.target.value)}
+          aria-label="With textarea"
+          value={textArea}
+          onKeyPress={submitMessage}
+        />
       </div>
     </div>
   );
