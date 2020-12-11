@@ -4,14 +4,13 @@ import randomColor from "randomcolor";
 
 let USER_ID = Math.floor(Math.random() * 100000001);
 
-export default function useAgoraChat(client) {
+export default function useAgoraChat(client, channelName) {
   let [messages, setMessages] = useState([]);
 
   let [currentMessage, setCurrentMessage] = useState();
 
-  let channel = useRef(client.createChannel("channelId")).current;
-
   let color = useRef(randomColor({ luminosity: "dark" })).current;
+  let channel = useRef(client.createChannel(channelName)).current;
 
   const initRm = async () => {
     await client.login({
@@ -28,7 +27,7 @@ export default function useAgoraChat(client) {
 
   useEffect(() => {
     initRm();
-  }, []);
+  }, [USER_ID]);
 
   useEffect(() => {
     channel.on("ChannelMessage", (data, uid) => {
@@ -64,5 +63,5 @@ export default function useAgoraChat(client) {
     if (currentMessage) setMessages([...messages, currentMessage]);
   }, [currentMessage]);
 
-  return { messages, sendChannelMessage };
+  return { messages, sendChannelMessage, color };
 }

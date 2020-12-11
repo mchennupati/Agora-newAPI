@@ -17,9 +17,14 @@ const chatClient = AgoraRTM.createInstance("2e5346b36d1f40b1bbc62472116d96de");
 export default function App() {
   const [channel, setChannel] = useState("default");
 
+  let channelName = channel;
+
   const [textArea, setTextArea] = useState();
 
-  const { messages, sendChannelMessage } = useAgoraChat(chatClient);
+  const { messages, sendChannelMessage, color } = useAgoraChat(
+    chatClient,
+    channelName
+  );
 
   const {
     localAudioTrack,
@@ -31,6 +36,7 @@ export default function App() {
   } = useAgora(client);
 
   function submitMessage(event) {
+    console.log(event);
     if (event.key === 13) {
       event.preventDefault();
       if (textArea.trim().length === 0) return;
@@ -134,6 +140,7 @@ export default function App() {
       </div>
 
       <div className="d-flex flex-column py-5 px-3">
+        <h2>{channel} </h2>
         {messages.map((data, index) => {
           return (
             <div className="row" key={`chat${index + 1}`}>
@@ -146,7 +153,8 @@ export default function App() {
         })}
       </div>
       <div>
-        <textarea
+        <h2> {JSON.stringify(color)} </h2>
+        <input
           placeholder="Type your message here"
           className="form-control"
           onChange={(e) => setTextArea(e.target.value)}
