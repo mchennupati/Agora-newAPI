@@ -19,7 +19,7 @@ export default function App() {
 
   const [textArea, setTextArea] = useState();
 
-  const { messages, sendChannelMessage } = useAgoraChat("12345", chatClient);
+  const { messages, sendChannelMessage } = useAgoraChat(chatClient);
 
   const {
     localAudioTrack,

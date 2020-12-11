@@ -4,7 +4,7 @@ import randomColor from "randomcolor";
 
 let USER_ID = Math.floor(Math.random() * 100000001);
 
-export default function useAgoraChat(userName, client) {
+export default function useAgoraChat(client) {
   let [messages, setMessages] = useState([]);
 
   let [currentMessage, setCurrentMessage] = useState();
@@ -21,7 +21,7 @@ export default function useAgoraChat(userName, client) {
     await channel.join();
 
     await client.setLocalUserAttributes({
-      name: userName,
+      name: USER_ID.toString(),
       color
     });
   };
