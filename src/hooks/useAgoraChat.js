@@ -1,23 +1,47 @@
 import React, { useEffect, useState, useRef } from "react";
 
+import AgoraRTM from "agora-rtm-sdk";
+
 import randomColor from "randomcolor";
 
 let USER_ID = Math.floor(Math.random() * 100000001);
 
 export default function useAgoraChat(client, channelName) {
+  const [joinState, setJoinState] = useState(false);
+
   let [messages, setMessages] = useState([]);
+  let [members, setMembers] = useState([]);
 
   let [currentMessage, setCurrentMessage] = useState();
 
   let color = useRef(randomColor({ luminosity: "dark" })).current;
   let channel = useRef(client.createChannel(channelName)).current;
 
+  // async function join(channel, token, uid) {
+
+  //   if (!client) return;
+
+  //   await client.join(appid, channel, token);
+  //   await client.publish([microphoneTrack, cameraTrack]);
+
+  //   setJoinState(true);
+  // }
+
   const initRm = async () => {
     await client.login({
       uid: USER_ID.toString()
     });
 
-    await channel.join();
+    channel
+      .getMembers()
+      .then((res) => {
+        setMembers(res);
+      })
+      .catch((err) => console.log(err));
+
+    if (!members.includes(USER_ID.toString())) {
+      await channel.join();
+    }
 
     await client.setLocalUserAttributes({
       name: USER_ID.toString(),

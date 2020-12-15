@@ -141,6 +141,7 @@ export default function App() {
 
       <div className="d-flex flex-column py-5 px-3">
         <h2>{channel} </h2>
+
         {messages.map((data, index) => {
           return (
             <div className="row" key={`chat${index + 1}`}>
@@ -158,7 +159,6 @@ export default function App() {
           placeholder="Type your message here"
           className="form-control"
           onChange={(e) => setTextArea(e.target.value)}
-          aria-label="With textarea"
           value={textArea}
           onKeyPress={submitMessage}
         />
