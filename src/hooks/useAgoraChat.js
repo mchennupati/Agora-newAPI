@@ -39,9 +39,9 @@ export default function useAgoraChat(client, channelName) {
       })
       .catch((err) => console.log(err));
 
-    if (!members.includes(USER_ID.toString())) {
-      await channel.join();
-    }
+    // if (!members.includes(USER_ID.toString())) {
+    await channel.join();
+    // }
 
     await client.setLocalUserAttributes({
       name: USER_ID.toString(),

@@ -37,7 +37,7 @@ export default function App() {
 
   function submitMessage(event) {
     console.log(event);
-    if (event.key === 13) {
+    if (event.keyCode === 13) {
       event.preventDefault();
       if (textArea.trim().length === 0) return;
       sendChannelMessage(event.target.value);
@@ -157,10 +157,9 @@ export default function App() {
         <h2> {JSON.stringify(color)} </h2>
         <input
           placeholder="Type your message here"
-          className="form-control"
           onChange={(e) => setTextArea(e.target.value)}
           value={textArea}
-          onKeyPress={submitMessage}
+          onKeyDown={submitMessage}
         />
       </div>
     </div>
