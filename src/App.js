@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import makeid from "./helpers/makeid";
 import AgoraRTC from "agora-rtc-sdk-ng";
+import Logout from "./Logout";
 
 import AgoraRTM from "agora-rtm-sdk";
 
@@ -41,6 +42,7 @@ export default function App() {
 
   return (
     <div className="call">
+      <Logout />
       <div style={{ display: "grid" }}>
         <div>You are in the channel : {channel} </div>
         <div> The messages are here </div>

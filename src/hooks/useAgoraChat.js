@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import makeid from "../helpers/makeid";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import AgoraRTM from "agora-rtm-sdk";
 
 import randomColor from "randomcolor";
 
-let USER_ID = makeid(5);
-
 export default function useAgoraChat(client, channelName) {
+  let { user } = useAuth0();
+  let USER_ID = user.nickname;
+
   const [joinState, setJoinState] = useState(false);
 
   let [messages, setMessages] = useState([]);
@@ -79,7 +81,7 @@ export default function useAgoraChat(client, channelName) {
       .sendMessage({ text })
       .then(() => {
         setCurrentMessage({
-          user: { name: "Current User (Me)", color },
+          user: { name: USER_ID, color },
           message: text
         });
       })
