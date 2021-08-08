@@ -20,34 +20,24 @@ export default function useAgoraChat(client, channelName) {
   let color = useRef(randomColor({ luminosity: "dark" })).current;
   let channel = useRef(client.createChannel(channelName)).current;
 
-  // async function join(channel, token, uid) {
-
-  //   if (!client) return;
-
-  //   await client.join(appid, channel, token);
-  //   await client.publish([microphoneTrack, cameraTrack]);
-
-  //   setJoinState(true);
-  // }
-
   const initRm = async () => {
     await client.login({
       uid: USER_ID.toString()
     });
 
-    // channel
-    //   .getMembers()
-    //   .then((res) => {
-    //     setMembers(res);
-    //   })
-    //   .catch((err) => console.log(err));
-
-    // if (!members.includes(USER_ID.toString())) {
     channel
-      .join()
-      .then((res) => console.log(res))
+      .getMembers()
+      .then((res) => {
+        setMembers(res);
+      })
       .catch((err) => console.log(err));
-    // }
+
+    if (!members.includes(USER_ID.toString())) {
+      channel
+        .join()
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+    }
 
     await client.setLocalUserAttributes({
       name: USER_ID.toString(),
@@ -64,14 +54,15 @@ export default function useAgoraChat(client, channelName) {
     channel.on("ChannelMessage", (data, uid) => {
       handleMessageReceived(data, uid);
     });
-  });
+  }, []);
 
   async function handleMessageReceived(data, uid) {
     let user = await client.getUserAttributes(uid);
 
-    console.log(data);
+    console.log("message received", data);
+
     if (data.messageType === "TEXT") {
-      let newMessageData = { user, messsage: data.text };
+      let newMessageData = { user, message: data.text };
       setCurrentMessage(newMessageData);
     }
   }
@@ -94,5 +85,5 @@ export default function useAgoraChat(client, channelName) {
     if (currentMessage) setMessages([...messages, currentMessage]);
   }, [currentMessage]);
 
-  return { messages, sendChannelMessage };
+  return { sendChannelMessage, messages, members };
 }

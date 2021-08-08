@@ -23,6 +23,7 @@ export const AppContextProvider = ({ children }) => {
       .request(options)
       .then((response) => {
         console.log(response);
+        console.log("enter AppContext", response);
         setUsers(response.data);
       })
       .catch(function (error) {

@@ -8,6 +8,7 @@ import AgoraRTM from "agora-rtm-sdk";
 import useAgora from "./hooks/useAgora";
 import useAgoraChat from "./hooks/useAgoraChat";
 import MediaPlayer from "./components/MediaPlayer";
+import { AppContext } from "./AppContext";
 
 import "./Call.css";
 import "./App.css";
@@ -16,14 +17,19 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const client = AgoraRTC.createClient({ codec: "h264", mode: "rtc" });
 
-const chatClient = AgoraRTM.createInstance("4f2102e306e244e88ed165dc12a4bfa7");
+const chatClient = AgoraRTM.createInstance("1247255ec5e448cba4c61969f94526c0");
 
 export default function App() {
-  const [channel, setChannel] = useState("default");
+  let { users } = React.useContext(AppContext);
 
-  const [textArea, setTextArea] = useState("");
+  const [channel, setChannel] = useState("Just-US");
 
-  const { messages, sendChannelMessage } = useAgoraChat(chatClient, channel);
+  const [textArea, setTextArea] = useState("hi");
+
+  const { messages, sendChannelMessage, members } = useAgoraChat(
+    chatClient,
+    channel
+  );
 
   const {
     localAudioTrack,
@@ -34,15 +40,29 @@ export default function App() {
     remoteUsers
   } = useAgora(client);
 
-  function submitMessage(textArea) {
-    if (textArea.trim().length === 0) return;
-    sendChannelMessage(textArea);
-    setTextArea("");
+  // function submitMessage(textArea) {
+  //   if (textArea.trim().length === 0) return;
+  //   sendChannelMessage(textArea);
+  //   setTextArea("");
+  // }
+
+  function submitTextArea(e) {
+    if (e.charCode === 13) {
+      e.preventDefault();
+      if (textArea.trim().length === 0) return;
+      sendChannelMessage(e.currentTarget.value);
+      setTextArea("");
+    }
   }
 
   return (
     <div className="call">
       <Logout />
+
+      {JSON.stringify(users)}
+
+      {JSON.stringify(members)}
+
       <div style={{ display: "grid" }}>
         <div>You are in the channel : {channel} </div>
         <div> The messages are here </div>
@@ -61,10 +81,11 @@ export default function App() {
             placeholder="Type your message here"
             onChange={(e) => setTextArea(e.target.value)}
             value={textArea}
+            onKeyPress={submitTextArea}
           />
-          <button style={{}} onClick={() => submitMessage(textArea)}>
+          {/* <button style={{}} onClick={() => submitMessage(textArea)}>
             Send
-          </button>
+          </button> */}
         </div>
       </div>
       <form className="call-form">

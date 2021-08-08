@@ -5,7 +5,7 @@ import AgoraRTC, {
 } from "agora-rtc-sdk-ng";
 
 export default function useAgora(client) {
-  const appid = "2e5346b36d1f40b1bbc62472116d96de";
+  const appid = "1247255ec5e448cba4c61969f94526c0";
 
   const [localVideoTrack, setLocalVideoTrack] = useState("");
   const [localAudioTrack, setLocalAudioTrack] = useState("");
