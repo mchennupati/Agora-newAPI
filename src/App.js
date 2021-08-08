@@ -16,12 +16,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const client = AgoraRTC.createClient({ codec: "h264", mode: "rtc" });
 
 const chatClient = AgoraRTM.createInstance("4f2102e306e244e88ed165dc12a4bfa7");
-const randomUseName = makeid(5);
 
 export default function App() {
   const [channel, setChannel] = useState("default");
-
-  let channelName = channel;
 
   const [textArea, setTextArea] = useState("");
 
@@ -36,17 +33,10 @@ export default function App() {
     remoteUsers
   } = useAgora(client);
 
-  function submitMessage(event) {
-    console.log(event);
-
-    if (event.charCode === 13) {
-      event.preventDefault();
-
-      if (textArea.trim().length === 0) return;
-
-      sendChannelMessage(event.currentTarget.value);
-      setTextArea("");
-    }
+  function submitMessage(textArea) {
+    if (textArea.trim().length === 0) return;
+    sendChannelMessage(textArea);
+    setTextArea("");
   }
 
   return (
@@ -64,17 +54,17 @@ export default function App() {
             </div>
           );
         })}
+        <div style={{ display: "flex", alignContent: "center" }}>
+          <textarea
+            placeholder="Type your message here"
+            onChange={(e) => setTextArea(e.target.value)}
+            value={textArea}
+          />
+          <button style={{}} onClick={() => submitMessage(textArea)}>
+            Send
+          </button>
+        </div>
       </div>
-      <div>
-        <textarea
-          placeholder="Type your message here"
-          onChange={(e) => setTextArea(e.currentTarget.value)}
-          value={textArea}
-          onKeyPress={submitMessage}
-        />
-        {textArea}
-      </div>
-
       <form className="call-form">
         {/* <label>
           AppID:
