@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
+import makeid from "../helpers/makeid";
 
 import AgoraRTM from "agora-rtm-sdk";
 
 import randomColor from "randomcolor";
 
-let USER_ID = Math.floor(Math.random() * 100000001);
+let USER_ID = makeid(5);
 
 export default function useAgoraChat(client, channelName) {
   const [joinState, setJoinState] = useState(false);
@@ -32,15 +33,18 @@ export default function useAgoraChat(client, channelName) {
       uid: USER_ID.toString()
     });
 
-    channel
-      .getMembers()
-      .then((res) => {
-        setMembers(res);
-      })
-      .catch((err) => console.log(err));
+    // channel
+    //   .getMembers()
+    //   .then((res) => {
+    //     setMembers(res);
+    //   })
+    //   .catch((err) => console.log(err));
 
     // if (!members.includes(USER_ID.toString())) {
-    await channel.join();
+    channel
+      .join()
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
     // }
 
     await client.setLocalUserAttributes({
@@ -51,7 +55,8 @@ export default function useAgoraChat(client, channelName) {
 
   useEffect(() => {
     initRm();
-  }, [USER_ID]);
+    console.log("uid is", client.uid);
+  }, []);
 
   useEffect(() => {
     channel.on("ChannelMessage", (data, uid) => {
@@ -87,5 +92,5 @@ export default function useAgoraChat(client, channelName) {
     if (currentMessage) setMessages([...messages, currentMessage]);
   }, [currentMessage]);
 
-  return { messages, sendChannelMessage, color };
+  return { messages, sendChannelMessage };
 }

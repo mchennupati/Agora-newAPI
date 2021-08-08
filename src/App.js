@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import makeid from "./helpers/makeid";
 import AgoraRTC from "agora-rtc-sdk-ng";
 
 import AgoraRTM from "agora-rtm-sdk";
@@ -7,24 +7,25 @@ import AgoraRTM from "agora-rtm-sdk";
 import useAgora from "./hooks/useAgora";
 import useAgoraChat from "./hooks/useAgoraChat";
 import MediaPlayer from "./components/MediaPlayer";
+
 import "./Call.css";
+import "./App.css";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const client = AgoraRTC.createClient({ codec: "h264", mode: "rtc" });
 
-const chatClient = AgoraRTM.createInstance("2e5346b36d1f40b1bbc62472116d96de");
+const chatClient = AgoraRTM.createInstance("4f2102e306e244e88ed165dc12a4bfa7");
+const randomUseName = makeid(5);
 
 export default function App() {
   const [channel, setChannel] = useState("default");
 
   let channelName = channel;
 
-  const [textArea, setTextArea] = useState();
+  const [textArea, setTextArea] = useState("");
 
-  const { messages, sendChannelMessage, color } = useAgoraChat(
-    chatClient,
-    channelName
-  );
+  const { messages, sendChannelMessage } = useAgoraChat(chatClient, channel);
 
   const {
     localAudioTrack,
@@ -37,16 +38,43 @@ export default function App() {
 
   function submitMessage(event) {
     console.log(event);
-    if (event.keyCode === 13) {
+
+    if (event.charCode === 13) {
       event.preventDefault();
+
       if (textArea.trim().length === 0) return;
-      sendChannelMessage(event.target.value);
+
+      sendChannelMessage(event.currentTarget.value);
       setTextArea("");
     }
   }
 
   return (
     <div className="call">
+      <div style={{ display: "grid" }}>
+        <div>You are in the channel : {channel} </div>
+        <div> The messages are here </div>
+        {messages.map((data, index) => {
+          return (
+            <div className="row" key={`chat${index + 1}`}>
+              <h5 className="font-size-15" style={{ color: data.user.color }}>
+                {`${data.user.name} :`}
+              </h5>
+              <p className="text-break">{` ${data.message}`}</p>
+            </div>
+          );
+        })}
+      </div>
+      <div>
+        <textarea
+          placeholder="Type your message here"
+          onChange={(e) => setTextArea(e.currentTarget.value)}
+          value={textArea}
+          onKeyPress={submitMessage}
+        />
+        {textArea}
+      </div>
+
       <form className="call-form">
         {/* <label>
           AppID:
@@ -137,30 +165,6 @@ export default function App() {
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="d-flex flex-column py-5 px-3">
-        <h2>{channel} </h2>
-
-        {messages.map((data, index) => {
-          return (
-            <div className="row" key={`chat${index + 1}`}>
-              <h5 className="font-size-15" style={{ color: data.user.color }}>
-                {`${data.user.name} :`}
-              </h5>
-              <p className="text-break">{` ${data.message}`}</p>
-            </div>
-          );
-        })}
-      </div>
-      <div>
-        <h2> {JSON.stringify(color)} </h2>
-        <input
-          placeholder="Type your message here"
-          onChange={(e) => setTextArea(e.target.value)}
-          value={textArea}
-          onKeyDown={submitMessage}
-        />
       </div>
     </div>
   );
