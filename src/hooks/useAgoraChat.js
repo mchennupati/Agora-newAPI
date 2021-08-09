@@ -1,16 +1,18 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import makeid from "../helpers/makeid";
+import useSWR from "swr";
 import { useAuth0 } from "@auth0/auth0-react";
+import useAuthData from "./useAuthData";
 
 import AgoraRTM from "agora-rtm-sdk";
 
 import randomColor from "randomcolor";
 import { AppContext } from "../AppContext";
+import axios from "axios";
 
 export default function useAgoraChat(client, channelName) {
   let { user } = useAuth0();
 
-  let { users } = useContext(AppContext);
+  let { users, isLoading, isError } = useAuthData();
 
   let USER_ID = user.nickname;
 
@@ -29,14 +31,8 @@ export default function useAgoraChat(client, channelName) {
 
   const initRm = async () => {
     await client.login({
-      uid: USER_ID.toString()
+      uid: USER_ID.toString(),
     });
-
-    users &&
-      (await client
-        .queryPeersOnlineStatus(users.map((item) => item.nickname))
-        .then((res) => setOnlineStatus(res))
-        .catch((err) => setOnlineStatus(JSON.stringify(err))));
 
     client.on("ConnectionStateChanged", (state, reason) => {
       setJoinedState(state + " " + reason);
@@ -58,7 +54,7 @@ export default function useAgoraChat(client, channelName) {
 
     await client.setLocalUserAttributes({
       name: USER_ID.toString(),
-      color
+      color,
     });
   };
 
@@ -76,11 +72,19 @@ export default function useAgoraChat(client, channelName) {
     });
   }, []);
 
-  // useEffect(() => {
-  //   channel.on("query", (data, uid) => {
-  //     handleMessageReceived(data, uid);
-  //   });
-  // }, []);
+  useEffect(() => {
+    users &&
+      client
+        .queryPeersOnlineStatus(users.map((item) => item.nickname))
+        .then((res) => setOnlineStatus(res))
+        .catch((err) => setOnlineStatus(JSON.stringify(users)));
+  }, [users, client]);
+
+  // (  useEffect(() => {
+  // //   channel.on("query", (data, uid) => {
+  // //     handleMessageReceived(data, uid);
+  // //   });
+  // // }, []);
 
   async function leave() {
     setRemoteUsersChat([]);
@@ -143,7 +147,7 @@ export default function useAgoraChat(client, channelName) {
       .then(() => {
         setCurrentMessage({
           user: { name: USER_ID, color },
-          message: text
+          message: text,
         });
       })
       .catch((err) => {
@@ -160,6 +164,7 @@ export default function useAgoraChat(client, channelName) {
     messages,
     onlineStatus,
     joinedState,
-    remoteUsersChat
+    remoteUsersChat,
+    users,
   };
 }

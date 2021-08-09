@@ -7,6 +7,7 @@ import AgoraRTM from "agora-rtm-sdk";
 import { Card } from "react-bootstrap";
 import useAgora from "./hooks/useAgora";
 import useAgoraChat from "./hooks/useAgoraChat";
+import useAuthData from "./hooks/useAuthData";
 import MediaPlayer from "./components/MediaPlayer";
 import { AppContext } from "./AppContext";
 
@@ -29,7 +30,8 @@ export default function App() {
     sendChannelMessage,
     onlineStatus,
     joinedState,
-    remoteUsersChat
+    remoteUsersChat,
+    users,
   } = useAgoraChat(chatClient, channel);
 
   const {
@@ -38,17 +40,17 @@ export default function App() {
     leave,
     join,
     joinState,
-    remoteUsers
+    remoteUsers,
   } = useAgora(client);
 
   // converts the list into an array and sorts by second value
   let arrayOnlineStatus = Object.keys(onlineStatus)
     .map((key) => ({
       name: key,
-      online: onlineStatus[key]
+      online: onlineStatus[key],
     }))
     .sort(function (a, b) {
-      return a === b ? 0 : a ? -1 : 1;
+      return a.online === b.online ? 0 : a.online ? -1 : 1;
     });
 
   // function submitMessage(textArea) {
@@ -69,9 +71,10 @@ export default function App() {
   return (
     <div className="call">
       <Logout /> <br />
-      joinedState: {JSON.stringify(joinedState)} <br />
-      RemoteUsers :{JSON.stringify(remoteUsersChat)} <br />
-      onlineStatus: {JSON.stringify(onlineStatus)} <br />
+      {/*joinedState: {JSON.stringify(joinedState)} <br /> */}
+      {/* RemoteUsers :{JSON.stringify(remoteUsersChat)} <br />*/}
+      {/*onlineStatus: {JSON.stringify(onlineStatus)} <br /> */}
+      {/*allUsers: {JSON.stringify(users)} <br /> */}
       <Card className="onlineStatus">
         <table>
           {arrayOnlineStatus.map((item) => (
@@ -79,7 +82,7 @@ export default function App() {
               style={{
                 color: item.online ? "green" : "red",
                 border: "solid grey 1px",
-                padding: "2px"
+                padding: "2px",
               }}
             >
               {item.name}
