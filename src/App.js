@@ -71,19 +71,22 @@ export default function App() {
       <Logout /> <br />
       joinedState: {JSON.stringify(joinedState)} <br />
       RemoteUsers :{JSON.stringify(remoteUsersChat)} <br />
-      {/* onlineStatus: {JSON.stringify(arrayOnlineStatus)} <br /> */}
-      <table>
-        <tr key={"header"}>
-          <th> name </th>
-        </tr>
-        {arrayOnlineStatus.map((item) => (
-          <tr key={item}>
-            <td style={{ color: item.online ? "green" : "red" }}>
+      onlineStatus: {JSON.stringify(onlineStatus)} <br />
+      <Card className="onlineStatus">
+        <table>
+          {arrayOnlineStatus.map((item) => (
+            <td
+              style={{
+                color: item.online ? "green" : "red",
+                border: "solid grey 1px",
+                padding: "2px"
+              }}
+            >
               {item.name}
             </td>
-          </tr>
-        ))}
-      </table>
+          ))}
+        </table>
+      </Card>
       {/* Auth0 Users: {JSON.stringify(users.map(item=> item.nickname))} <br /> */}
       <div>
         <div>

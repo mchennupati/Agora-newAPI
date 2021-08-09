@@ -33,8 +33,8 @@ export default function useAgoraChat(client, channelName) {
       uid: USER_ID.toString()
     });
 
-    client
-      .queryPeersOnlineStatus(usersAgora)
+    await client
+      .queryPeersOnlineStatus(users.map((item) => item.nickname))
       .then((res) => setOnlineStatus(res))
       .catch((err) => setOnlineStatus(JSON.stringify(err)));
 
@@ -42,7 +42,7 @@ export default function useAgoraChat(client, channelName) {
       setJoinedState(state + " " + reason);
     });
 
-    channel
+    await channel
       .getMembers()
       .then((res) => {
         setMembers(res);
@@ -67,19 +67,17 @@ export default function useAgoraChat(client, channelName) {
     console.log("uid is", client.uid);
   }, []);
 
-  useEffect(() => {}, []);
-
   useEffect(() => {
     channel.on("ChannelMessage", (data, uid) => {
       handleMessageReceived(data, uid);
     });
   }, []);
 
-  useEffect(() => {
-    channel.on("query", (data, uid) => {
-      handleMessageReceived(data, uid);
-    });
-  }, []);
+  // useEffect(() => {
+  //   channel.on("query", (data, uid) => {
+  //     handleMessageReceived(data, uid);
+  //   });
+  // }, []);
 
   async function leave() {
     setRemoteUsersChat([]);
