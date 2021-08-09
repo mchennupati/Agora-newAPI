@@ -10,19 +10,31 @@ export default function useAgoraChat(client, channelName) {
   let { user } = useAuth0();
   let USER_ID = user.nickname;
 
-  const [joinState, setJoinState] = useState(false);
+  const [joinedState, setJoinedState] = useState("not done");
 
   let [messages, setMessages] = useState([]);
   let [members, setMembers] = useState([]);
+  let [onlineStatus, setOnlineStatus] = useState("not sure");
+  const [remoteUsersChat, setRemoteUsersChat] = useState([]);
 
   let [currentMessage, setCurrentMessage] = useState();
 
   let color = useRef(randomColor({ luminosity: "dark" })).current;
+
   let channel = useRef(client.createChannel(channelName)).current;
 
   const initRm = async () => {
     await client.login({
       uid: USER_ID.toString()
+    });
+
+    client
+      .queryPeersOnlineStatus(["ThinkingAboutThinking"])
+      .then((res) => setOnlineStatus(res))
+      .catch((err) => setOnlineStatus(JSON.stringify(err)));
+
+    client.on("ConnectionStateChanged", (state, reason) => {
+      setJoinedState(state + " " + reason);
     });
 
     channel
@@ -50,11 +62,63 @@ export default function useAgoraChat(client, channelName) {
     console.log("uid is", client.uid);
   }, []);
 
+  useEffect(() => {}, []);
+
   useEffect(() => {
     channel.on("ChannelMessage", (data, uid) => {
       handleMessageReceived(data, uid);
     });
   }, []);
+
+  useEffect(() => {
+    channel.on("query", (data, uid) => {
+      handleMessageReceived(data, uid);
+    });
+  }, []);
+
+  async function leave() {
+    setRemoteUsersChat([]);
+    setJoinedState(false);
+    await client.leave();
+  }
+
+  useEffect(() => {
+    if (!client) return;
+    setRemoteUsersChat(client.getChannelMemberCount(["Just-US"]));
+
+    // toggle rerender while state of remoteUsers changed.
+
+    const handleUserJoined = (user) => {
+      setRemoteUsersChat((remoteUsers) =>
+        Array.from(client.getChannelMemberCount(["Just-US"]))
+      );
+    };
+
+    const handleUserLeft = (user) => {
+      setRemoteUsersChat((remoteUsers) =>
+        Array.from(client.getChannelMemberCount(["Just-US"]))
+      );
+    };
+
+    client.on("user-joined", handleUserJoined);
+    client.on("user-left", handleUserLeft);
+
+    return () => {
+      client.off("user-joined", handleUserJoined);
+      client.off("user-left", handleUserLeft);
+    };
+  }, [client]);
+  // channel.on('MemberJoined', function (memberId) {
+
+  //     document.getElementById("log").appendChild(document.createElement('div')).append(memberId + " joined the channel")
+
+  // })
+  // // Display channel member stats
+  // channel.on('MemberLeft', function (memberId) {
+
+  //     document.getElementById("log").appendChild(document.createElement('div')).append(memberId + " left the channel")
+
+  // })
 
   async function handleMessageReceived(data, uid) {
     let user = await client.getUserAttributes(uid);
@@ -85,5 +149,11 @@ export default function useAgoraChat(client, channelName) {
     if (currentMessage) setMessages([...messages, currentMessage]);
   }, [currentMessage]);
 
-  return { sendChannelMessage, messages, members };
+  return {
+    sendChannelMessage,
+    messages,
+    onlineStatus,
+    joinedState,
+    remoteUsersChat
+  };
 }

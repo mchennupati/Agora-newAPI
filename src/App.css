@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+.messages {
+  margin: 20px;
+  height: 400px;
+  padding: 20px;
+}
+
+.ownMessage {
+  margin: 20px;
+}

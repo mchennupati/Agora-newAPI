@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import makeid from "./helpers/makeid";
+import React, { useState, useContext } from "react";
+
 import AgoraRTC from "agora-rtc-sdk-ng";
 import Logout from "./Logout";
 
 import AgoraRTM from "agora-rtm-sdk";
-
+import { Card } from "react-bootstrap";
 import useAgora from "./hooks/useAgora";
 import useAgoraChat from "./hooks/useAgoraChat";
 import MediaPlayer from "./components/MediaPlayer";
@@ -20,16 +20,19 @@ const client = AgoraRTC.createClient({ codec: "h264", mode: "rtc" });
 const chatClient = AgoraRTM.createInstance("1247255ec5e448cba4c61969f94526c0");
 
 export default function App() {
-  let { users } = React.useContext(AppContext);
+  let { users } = useContext(AppContext);
 
   const [channel, setChannel] = useState("Just-US");
 
   const [textArea, setTextArea] = useState("hi");
 
-  const { messages, sendChannelMessage, members } = useAgoraChat(
-    chatClient,
-    channel
-  );
+  const {
+    messages,
+    sendChannelMessage,
+    onlineStatus,
+    joinedState,
+    remoteUsersChat
+  } = useAgoraChat(chatClient, channel);
 
   const {
     localAudioTrack,
@@ -57,26 +60,29 @@ export default function App() {
 
   return (
     <div className="call">
-      <Logout />
-
-      {JSON.stringify(users)}
-
-      {JSON.stringify(members)}
-
-      <div style={{ display: "grid" }}>
-        <div>You are in the channel : {channel} </div>
-        <div> The messages are here </div>
-        {messages.map((data, index) => {
-          return (
-            <div className="row" key={`chat${index + 1}`}>
-              <h5 className="font-size-15" style={{ color: data.user.color }}>
-                {`${data.user.name} :`}
-              </h5>
-              <p className="text-break">{` ${data.message}`}</p>
-            </div>
-          );
-        })}
-        <div style={{ display: "flex", alignContent: "center" }}>
+      <Logout /> <br />
+      joinedState: {JSON.stringify(joinedState)} <br />
+      RemoteUsers :{JSON.stringify(remoteUsersChat)} <br />
+      onlineStatus: {JSON.stringify(onlineStatus)} <br />
+      <div>
+        <div>
+          You are in the channel : <b> {channel} </b>
+        </div>
+        <Card className="messages">
+          <div> The messages are here </div>
+          {messages.map((data, index) => {
+            return (
+              <div className="row" key={`chat${index + 1}`}>
+                <h5 className="font-size-15" style={{ color: data.user.color }}>
+                  {`${data.user.name} :`}
+                </h5>
+                <p className="text-break">{` ${data.message}`}</p>
+              </div>
+            );
+          })}
+        </Card>
+        <Card className="ownMessage">
+          <div> Hit Enter to Send </div>
           <textarea
             placeholder="Type your message here"
             onChange={(e) => setTextArea(e.target.value)}
@@ -86,7 +92,7 @@ export default function App() {
           {/* <button style={{}} onClick={() => submitMessage(textArea)}>
             Send
           </button> */}
-        </div>
+        </Card>
       </div>
       <form className="call-form">
         {/* <label>
