@@ -12,7 +12,6 @@ export default function useAgoraChat(client, channelName) {
 
   let { users } = useContext(AppContext);
 
-  let usersAgora = users.map((item) => item.nickname);
   let USER_ID = user.nickname;
 
   const [joinedState, setJoinedState] = useState("not done");
@@ -63,8 +62,11 @@ export default function useAgoraChat(client, channelName) {
   };
 
   useEffect(() => {
-    initRm();
-    console.log("uid is", client.uid);
+    async function init() {
+      await initRm();
+      console.log("uid is", client.uid);
+    }
+    init();
   }, []);
 
   useEffect(() => {
