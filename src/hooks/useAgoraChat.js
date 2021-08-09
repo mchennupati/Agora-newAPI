@@ -32,10 +32,11 @@ export default function useAgoraChat(client, channelName) {
       uid: USER_ID.toString()
     });
 
-    await client
-      .queryPeersOnlineStatus(users.map((item) => item.nickname))
-      .then((res) => setOnlineStatus(res))
-      .catch((err) => setOnlineStatus(JSON.stringify(err)));
+    users &&
+      (await client
+        .queryPeersOnlineStatus(users.map((item) => item.nickname))
+        .then((res) => setOnlineStatus(res))
+        .catch((err) => setOnlineStatus(JSON.stringify(err))));
 
     client.on("ConnectionStateChanged", (state, reason) => {
       setJoinedState(state + " " + reason);
