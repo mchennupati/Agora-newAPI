@@ -59,11 +59,8 @@ export default function useAgoraChat(client, channelName) {
   };
 
   useEffect(() => {
-    async function init() {
-      await initRm();
-      console.log("uid is", client.uid);
-    }
-    init();
+    initRm();
+    console.log("uid is", client.uid);
   }, []);
 
   useEffect(() => {
