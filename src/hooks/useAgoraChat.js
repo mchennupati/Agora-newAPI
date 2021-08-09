@@ -1,13 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import makeid from "../helpers/makeid";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import AgoraRTM from "agora-rtm-sdk";
 
 import randomColor from "randomcolor";
+import { AppContext } from "../AppContext";
 
 export default function useAgoraChat(client, channelName) {
   let { user } = useAuth0();
+
+  let { users } = useContext(AppContext);
+
+  let usersAgora = users.map((item) => item.nickname);
   let USER_ID = user.nickname;
 
   const [joinedState, setJoinedState] = useState("not done");
@@ -29,7 +34,7 @@ export default function useAgoraChat(client, channelName) {
     });
 
     client
-      .queryPeersOnlineStatus(["ThinkingAboutThinking"])
+      .queryPeersOnlineStatus(usersAgora)
       .then((res) => setOnlineStatus(res))
       .catch((err) => setOnlineStatus(JSON.stringify(err)));
 

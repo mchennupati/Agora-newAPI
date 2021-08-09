@@ -20,8 +20,6 @@ const client = AgoraRTC.createClient({ codec: "h264", mode: "rtc" });
 const chatClient = AgoraRTM.createInstance("1247255ec5e448cba4c61969f94526c0");
 
 export default function App() {
-  let { users } = useContext(AppContext);
-
   const [channel, setChannel] = useState("Just-US");
 
   const [textArea, setTextArea] = useState("hi");
@@ -43,6 +41,16 @@ export default function App() {
     remoteUsers
   } = useAgora(client);
 
+  // converts the list into an array and sorts by second value
+  let arrayOnlineStatus = Object.keys(onlineStatus)
+    .map((key) => ({
+      name: key,
+      online: onlineStatus[key]
+    }))
+    .sort(function (a, b) {
+      return a === b ? 0 : a ? -1 : 1;
+    });
+
   // function submitMessage(textArea) {
   //   if (textArea.trim().length === 0) return;
   //   sendChannelMessage(textArea);
@@ -63,7 +71,20 @@ export default function App() {
       <Logout /> <br />
       joinedState: {JSON.stringify(joinedState)} <br />
       RemoteUsers :{JSON.stringify(remoteUsersChat)} <br />
-      onlineStatus: {JSON.stringify(onlineStatus)} <br />
+      {/* onlineStatus: {JSON.stringify(arrayOnlineStatus)} <br /> */}
+      <table>
+        <tr key={"header"}>
+          <th> name </th>
+        </tr>
+        {arrayOnlineStatus.map((item) => (
+          <tr key={item}>
+            <td style={{ color: item.online ? "green" : "red" }}>
+              {item.name}
+            </td>
+          </tr>
+        ))}
+      </table>
+      {/* Auth0 Users: {JSON.stringify(users.map(item=> item.nickname))} <br /> */}
       <div>
         <div>
           You are in the channel : <b> {channel} </b>
